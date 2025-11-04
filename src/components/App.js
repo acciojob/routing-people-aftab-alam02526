@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
-  const [page, setPage] = useState("list");
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -10,18 +9,22 @@ function App() {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
       .then((data) => {
-        setUsers(data);
-        setLoading(false);
+        setTimeout(() => { 
+          setUsers(data);
+          setLoading(false);
+        }, 1000);
       });
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
 
-  if (page === "details" && selectedUser) {
+  if (selectedUser) {
     return (
       <div className="user-details">
-        <button onClick={() => setPage("list")}>⬅ Back</button>
-        <h2>{selectedUser.name}</h2>
+        <button onClick={() => setSelectedUser(null)}>Back</button>
+        <h1>{selectedUser.name}</h1>
         <p><strong>Email:</strong> {selectedUser.email}</p>
         <p><strong>Phone:</strong> {selectedUser.phone}</p>
         <p><strong>Website:</strong> {selectedUser.website}</p>
@@ -30,19 +33,21 @@ function App() {
   }
 
   return (
-    <div className="user-list">
-      <h1>User Profiles</h1>
+    <div className="app">
+      <h1>User List</h1>
       <ul>
         {users.map((user) => (
           <li key={user.id}>
-            <button
-              onClick={() => {
+            {/* Cypress expects <a> elements */}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
                 setSelectedUser(user);
-                setPage("details");
               }}
             >
               {user.name}
-            </button>
+            </a>
           </li>
         ))}
       </ul>
@@ -51,4 +56,5 @@ function App() {
 }
 
 export default App;
+
 

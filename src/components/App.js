@@ -5,32 +5,34 @@ function App() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
       .then((data) => {
-        setTimeout(() => { 
-          setUsers(data);
-          setLoading(false);
-        }, 1000);
+        setUsers(data);
+        setLoading(false);
       });
   }, []);
 
+
   if (loading) {
-    return <h1>Loading...</h1>;
+    return <div>Loading...</div>;
   }
+
 
   if (selectedUser) {
     return (
-      <div className="user-details">
+      <div>
         <button onClick={() => setSelectedUser(null)}>Back</button>
-        <h1>{selectedUser.name}</h1>
-        <p><strong>Email:</strong> {selectedUser.email}</p>
-        <p><strong>Phone:</strong> {selectedUser.phone}</p>
-        <p><strong>Website:</strong> {selectedUser.website}</p>
+        <p>Name: {selectedUser.name}</p>
+        <p>Email: {selectedUser.email}</p>
+        <p>Phone: {selectedUser.phone}</p>
+        <p>Website: {selectedUser.website}</p>
       </div>
     );
   }
+
 
   return (
     <div className="app">
@@ -38,12 +40,17 @@ function App() {
       <ul>
         {users.map((user) => (
           <li key={user.id}>
-            {/* Cypress expects <a> elements */}
             <a
-              href="#"
+              href={`/users/${user.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                setSelectedUser(user);
+                setLoading(true);
+                fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+                  .then((res) => res.json())
+                  .then((data) => {
+                    setSelectedUser(data);
+                    setLoading(false);
+                  });
               }}
             >
               {user.name}
@@ -56,5 +63,6 @@ function App() {
 }
 
 export default App;
+
 
 

@@ -1,27 +1,54 @@
-
-import React from "react";
-import './../styles/App.css';
-
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import UserList from "../components/UserList";
-import UserDetails from "../components/UserDetails";
+import React, { useEffect, useState } from "react";
 
 function App() {
-  return (
-    <Router>
-      <div className="app">
-        <h1>User Profiles</h1>
-        <nav>
-          <Link to="/">Home</Link>
-        </nav>
+  const [page, setPage] = useState("list");
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-        <Routes>
-          <Route path="/" element={<UserList />} />
-          <Route path="/user/:id" element={<UserDetails />} />
-        </Routes>
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(data);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (page === "details" && selectedUser) {
+    return (
+      <div className="user-details">
+        <button onClick={() => setPage("list")}>⬅ Back</button>
+        <h2>{selectedUser.name}</h2>
+        <p><strong>Email:</strong> {selectedUser.email}</p>
+        <p><strong>Phone:</strong> {selectedUser.phone}</p>
+        <p><strong>Website:</strong> {selectedUser.website}</p>
       </div>
-    </Router>
+    );
+  }
+
+  return (
+    <div className="user-list">
+      <h1>User Profiles</h1>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>
+            <button
+              onClick={() => {
+                setSelectedUser(user);
+                setPage("details");
+              }}
+            >
+              {user.name}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
 export default App;
+

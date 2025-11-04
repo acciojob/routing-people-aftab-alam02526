@@ -5,6 +5,7 @@ function App() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user list on mount
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
@@ -14,16 +15,23 @@ function App() {
       });
   }, []);
 
+  // ✅ Always render Loading when loading === true
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // User details view
   if (selectedUser) {
     return (
       <div>
         <button
           onClick={() => {
-            setSelectedUser(null);
+            setLoading(true);
+            // simulate loading when going back
+            setTimeout(() => {
+              setSelectedUser(null);
+              setLoading(false);
+            }, 100);
           }}
         >
           Back
@@ -38,6 +46,7 @@ function App() {
     );
   }
 
+  // Default user list view
   return (
     <div className="app">
       <h1>User List</h1>
@@ -48,13 +57,16 @@ function App() {
               href={`/users/${user.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                setLoading(true); // ✅ Set loading before fetching details
-                fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`)
-                  .then((res) => res.json())
-                  .then((data) => {
-                    setSelectedUser(data);
-                    setLoading(false);
-                  });
+                // ✅ setLoading and force re-render before fetching
+                setLoading(true);
+                setTimeout(() => {
+                  fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                      setSelectedUser(data);
+                      setLoading(false);
+                    });
+                }, 100);
               }}
             >
               {user.name}
@@ -67,5 +79,6 @@ function App() {
 }
 
 export default App;
+
 
 

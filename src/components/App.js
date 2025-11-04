@@ -5,7 +5,6 @@ function App() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user list
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((res) => res.json())
@@ -15,25 +14,30 @@ function App() {
       });
   }, []);
 
-  // Show loading state globally
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Show user details
   if (selectedUser) {
     return (
       <div>
-        <button onClick={() => setSelectedUser(null)}>Back</button>
+        <button
+          onClick={() => {
+            setSelectedUser(null);
+          }}
+        >
+          Back
+        </button>
+
         <p>Username: {selectedUser.username}</p>
         <p>Name: {selectedUser.name}</p>
         <p>Email: {selectedUser.email}</p>
         <p>Phone: {selectedUser.phone}</p>
+        <p>Website: {selectedUser.website}</p>
       </div>
     );
   }
 
-  // Default user list view
   return (
     <div className="app">
       <h1>User List</h1>
@@ -44,7 +48,7 @@ function App() {
               href={`/users/${user.id}`}
               onClick={(e) => {
                 e.preventDefault();
-                setLoading(true);
+                setLoading(true); // ✅ Set loading before fetching details
                 fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`)
                   .then((res) => res.json())
                   .then((data) => {
